@@ -1,0 +1,119 @@
+// A CMOS transition generator
+//
+// 1/ This module, is synchronised with any event on the "logic" digital signal "din"
+//
+// 2/ Following the event, a "transition" using the verilog-AMS "transition" function. This 
+// new signal is a "trapeze" with a given slope and a given delay.
+//
+// 3/ A verilog-AMS $model_table function  is then used in order to smooth the transition. The 
+// output signal is similar to the transitions of CMOS gate output.
+//
+// The module uses 4 static parameters, and 2 dynamic variables:
+// PARAMETERS:
+//   slew_lower_threshold_pct  (real) : this is the lower threshold used to define a transition (fraction of the full voltage swing)
+//   slew_upper_threshold_pct  (real) : this is the upper threshold used to define a transition (fraction of the full voltage swing)
+//   power_voltage   (real) : the value of the power supply used for boolean signals
+//   default_delay   (real) : an internal delay added to the event, used to take into account effect of slope when providing real delays.
+// DYNAMIC VARIABLES:
+// This values may change during the simulation, they are used to dynamically modify the transition time of the output signal as well as the delay.
+//   tt_val : Wanted transition time, measured from the lower threshold to the upper threshold. 
+//   delay_val : Additionnal delay added to the output signal may be positive or negative.
+//
+// Warning: Some unexpected delay_val may generate errors when signal generation causality is violated (when "default_delay"+"delay_val"-"half the full transition time" is less than 0)...
+//
+//
+// Example:
+//
+// wire din ; // A digital domain signal
+// electrical dout ; // An analog domain electrical signal
+// wreal tt_val // An analog domain real value
+// cmos_transition cmos_tr1(.din(din),.dout(xx),.tt_val(tt_val),.delay_val(10.0e-12)) ;
+// 
+// xx is an electrical signal with CMOS like transitions. The transition si generated with a delay of 10ps, and the transition time is tt_val.
+// all parameters use default parameters
+//
+// cmos_transition #(.power_voltage(1.4)) cmos_tr1(.din(din),.dout(xx),.tt_val(tt_val),.delay_val(10.0e-12)) ;
+// The same transition with a voltage swing of 1.4V.
+//
+//
+
+`timescale 1ns/100fs
+
+// For AMS
+`include "constants.vams"
+`include "disciplines.vams"
+
+module cmos_transition(
+                      din,       // Logic trigger for the transition generator
+                      dout,      // Output of the transition generator
+                      tt_val,    // Transition time of the output signal
+                      delay_val  // incremental delay for the output signal
+                      ) ;
+// The port directions
+input din ;
+output dout ;
+input tt_val ;
+input delay_val ;
+
+// The port types
+wire din        ; // It's a binary signal (from the digital world)
+electrical dout ; // It's an electrical signal (from the analog world)
+wreal tt_val    ; // It's a real value that behaves as a wire.
+wreal delay_val ; // It's a real value that behaves as a wire.
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  All the following  parameters may be overloaded to change the behavior of the module                //
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Signal measurement parameters according to the "Liberty" file names.
+parameter  real  slew_lower_threshold_pct 	= 0.3 ;                  // fraction of the full swing transition
+parameter  real  slew_upper_threshold_pct 	= 0.7 ;                  // fraction of the full swing transition
+// The full voltage swing.
+parameter real  power_voltage = 1.1 ; // volts
+// Default added delay: In order to be able to add a known delay to the signal (according to the threshold values) 
+// a minimum systematic delay is added 
+parameter real default_delay = 2.0e-9 ; // 2ns default delay
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  All the following  parameters are fixed                                                             //
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Signal measurement parameters according to the "Liberty" file names.
+localparam  real  input_threshold_pct      	= 0.5 ;                  // fraction of the full swing transition, cannot realy be modified
+localparam  real  output_threshold_pct     	= 0.5 ;                  // fraction of the full swing transition, cannot realy be modified
+
+
+// A simple theoretical transfert function for a CMOS gate.
+localparam real cmos_gain = 5.075 ;
+localparam real cmos_tablex[0:26] = '{0.00, 0.04, 0.08, 0.12, 0.15, 0.19, 0.23, 0.27, 0.31, 0.35, 0.38, 0.42, 0.46, 
+                                   0.50, 0.54, 0.58, 0.62, 0.65, 0.69, 0.73, 0.77, 0.81, 0.85, 0.88, 0.92, 0.96, 1.00};
+
+localparam real cmos_tabley[0:26] = '{0.000, 0.001, 0.002, 0.004, 0.006, 0.009, 0.012, 0.017, 0.025, 0.038, 0.069, 0.160, 0.297,
+                                   0.500, 0.703, 0.840, 0.931, 0.962, 0.975, 0.983, 0.988, 0.991, 0.994, 0.996, 0.998, 0.999, 1.000};
+
+
+// Computation of the time needed to generate the output signal taking into account the measurement threshold as well as the gain of 
+// the CMOS transfert function.
+wreal extended_tt_val ;
+assign extended_tt_val = cmos_gain*tt_val/(slew_upper_threshold_pct-slew_lower_threshold_pct) ;
+
+// Computation of the real needed delay taking into account the wanted delay and the real slope.
+// The resulting delay should never be less than 0
+wreal extended_delay_val ;
+assign extended_delay_val = default_delay + delay_val - extended_tt_val/2 ;
+
+
+analog
+begin
+  // Generate the signal
+  V(dout) <+ power_voltage*$table_model((transition(din,extended_delay_val,extended_tt_val)),cmos_tablex,cmos_tabley) ;
+  // Check if input values are correct
+  @(cross(extended_delay_val,-1))
+    $error("ERROR: cmos_transition, total computed delay is negative") ;
+end
+
+endmodule

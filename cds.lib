@@ -1,0 +1,38 @@
+
+### *************************************************************************
+### Generic PDK
+### *************************************************************************
+INCLUDE /comelec/softs/opt/opus_kits/CADENCE_PDKS/gpdk045_v_4_0/cds.lib
+
+### *************************************************************************
+### IO Cells library
+### *************************************************************************
+SOFTINCLUDE   /comelec/softs/opt/opus_kits/CADENCE_PDKS/giolib045_v3.2/giolib045/cds.lib
+SOFTINCLUDE   /comelec/softs/opt/opus_kits/CADENCE_PDKS/giolib045_v3.2/gsclib045_tech/cds.lib
+
+### *************************************************************************
+### Standard Cells library and ITDB library
+### *************************************************************************
+#
+# Process Technology libraries (ITDB):
+SOFTINCLUDE /comelec/softs/opt/opus_kits/CADENCE_PDKS/gsclib045_all_v4.4/gsclib045_tech/cds.lib
+#
+# Standard cell libraries: Define
+SOFTINCLUDE /comelec/softs/opt/opus_kits/CADENCE_PDKS/gsclib045_all_v4.4/gsclib045/cds.lib
+SOFTINCLUDE /comelec/softs/opt/opus_kits/CADENCE_PDKS/gsclib045_all_v4.4/gsclib045_backbias/cds.lib
+SOFTINCLUDE /comelec/softs/opt/opus_kits/CADENCE_PDKS/gsclib045_all_v4.4/gsclib045_hvt/cds.lib
+SOFTINCLUDE /comelec/softs/opt/opus_kits/CADENCE_PDKS/gsclib045_all_v4.4/gsclib045_lvt/cds.lib
+#
+UNDEFINE PDKg45n_ITDB
+DEFINE GSCLIB045 /comelec/softs/opt/opus_kits/CADENCE_PDKS/gsclib045_all_v4.4/GSCLIB045
+ASSIGN GSCLIB045 DISPLAY PDKlib_top
+ASSIGN GSCLIB045 COMBINE gsclib045 gsclib045_hvt gsclib045_lvt gsclib045_backbias gsclib045_tech
+ASSIGN gsclib045 DISPLAY PDKlib
+ASSIGN gsclib045_hvt DISPLAY PDKlib
+ASSIGN gsclib045_lvt DISPLAY PDKlib
+ASSIGN gsclib045_backbias DISPLAY PDKlib
+ASSIGN gsclib045_tech DISPLAY PDKlib
+
+DEFINE avTech /comelec/softs/opt/Cadence/releases/ASSURA41_617/tools/assura/etc/avtech/avTech
+
+DEFINE TSPCFF_LIB /cal/exterieurs/emancuso-24/Documents/3A/CD2IC/circuit_design_project/TSPCFF_LIB

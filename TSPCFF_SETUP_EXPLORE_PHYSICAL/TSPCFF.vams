@@ -1,0 +1,60 @@
+// In order to check signal definitions
+`default_nettype none
+// In order to avoid confusion between Q ports and charges...
+`define VAMS_ELEC_DIS_ONLY
+`include "disciplines.vams"
+
+module INV ( VDD , VSS , A , Y );
+  inout      VDD , VSS , A , Y ;
+  electrical VDD ;
+  electrical VSS ;
+  electrical A ;
+  electrical Y ;
+
+  // Modifiable transistor sizes
+  parameter WP=214e-9 ;
+  parameter WN=145e-9 ;
+
+  g45p1svt #( .l(4.5e-08), .w(WP)) mp0 ( .d(Y) , .g(A) , .s(VDD) , .b(VDD));
+  g45n1svt #( .l(4.5e-08), .w(WN)) mn0 ( .d(Y) , .g(A) , .s(VSS) , .b(VSS));
+endmodule
+
+module TSPCFF ( VDD , VSS , ck , d , q );
+  inout         VDD , VSS , ck , d , q ;
+  electrical VDD ;
+  electrical VSS ;
+  electrical ck ;
+  electrical d ;
+  electrical q ;
+  
+  // Internal nodes
+  electrical x , y , qb , a , b , c ;
+  // Internal clock signal
+  electrical ckb ;
+
+  // Local parameters for transistor sizing
+  parameter WP_FF = 214e-9;
+  parameter WN_FF = 145e-9;
+  
+  // Netlist
+  // Clock inverter
+  INV inv_ck ( .VDD(VDD) , .VSS(VSS) , .A(ck) , .Y(ckb) );
+
+  // First stage
+  g45p1svt #( .l(4.5e-08), .w(WP_FF)) mp1 ( .d(x) , .g(d)   , .s(VDD) , .b(VDD));
+  g45n1svt #( .l(4.5e-08), .w(WN_FF)) mn4 ( .d(x) , .g(ckb) , .s(a)   , .b(VSS));
+  g45n1svt #( .l(4.5e-08), .w(WN_FF)) mn1 ( .d(a) , .g(d)   , .s(VSS) , .b(VSS));
+
+  // Second stage
+  g45p1svt #( .l(4.5e-08), .w(WP_FF)) mp2 ( .d(b) , .g(ckb) , .s(VDD) , .b(VDD));
+  g45p1svt #( .l(4.5e-08), .w(WP_FF)) mp4 ( .d(y) , .g(x)   , .s(b)   , .b(VDD));
+  g45n1svt #( .l(4.5e-08), .w(WN_FF)) mn2 ( .d(y) , .g(ckb) , .s(VSS) , .b(VSS));
+  
+  // Third stage
+  g45p1svt #( .l(4.5e-08), .w(WP_FF)) mp3 ( .d(c)  , .g(y)   , .s(VDD) , .b(VDD));
+  g45p1svt #( .l(4.5e-08), .w(WP_FF)) mp5 ( .d(qb) , .g(ckb) , .s(c)   , .b(VDD));
+  g45n1svt #( .l(4.5e-08), .w(WN_FF)) mn3 ( .d(qb) , .g(y)   , .s(VSS) , .b(VSS));
+
+  // Output inverter
+  INV #( .WP(390e-09), .WN(260e-09)) inv_q ( .VDD(VDD) , .VSS(VSS) , .A(qb) , .Y(q) );
+endmodule

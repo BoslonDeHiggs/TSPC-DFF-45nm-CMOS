@@ -1,0 +1,126 @@
+;----------------------------------------------------------------------------
+; @(#)$CDS: assura version av4.1:Production:dfII6.1.7-64b:IC6.1.7-64b.500.4 07/10/17 21:23 (sjfnl321) $
+; sub-version 4.1_USR5_HF11
+;----------------------------------------------------------------------------
+
+
+;----------------------------------------------------------------------------
+; Assura 3.2 DRC saved state
+;----------------------------------------------------------------------------
+
+
+
+vuiDRCFormTable = '(
+	format  "DFII"
+	vui2dbxor  nil
+	runName  "FinalRun"
+	runDir  "./DRC"
+	machineLoc  "local"
+	viewRules  t
+	technologyField  "gpdk045_av"
+	runsetField  "default"
+	rules  "/comelec/softs/opt/opus_kits/CADENCE_PDKS/gpdk045_v_4_0/assura/assuraDRC.rul"
+	switches  ""
+	rsfInclude  ""
+	varTag  "None"
+	varVal  ""
+	varDefVal  ""
+	varDesc  ""
+	avView  nil
+	additionalFunctionsButton  nil
+	limitDRCswitcher  nil
+	library  "TSPCFF_LIB"
+	cell  "TSPCFF"
+	view  "layout"
+	saveExtracted  nil
+	extractedView  "drc_extracted"
+	areaButton  "Full"
+	rulesButton  nil
+	rsfIncludeButton  nil
+)
+
+
+
+
+limitDrcCheckTable = '(
+	limitDRCTreatModeList  "include"
+	limitDRCFiltersList  "inputLayer"
+	layersListText  nil
+	limitDRCEditor  ""
+)
+
+
+
+
+vuiDRCFormVarTable = '(
+)
+
+
+additionalFunctionsFieldsTable = '(
+	AFflattenCellFlag  nil
+	AFjoinableNetsFlag  nil
+	AFoutFileFlag  nil
+	AFchangeLabelFlag  nil
+	AFdeleteCellTextFlag  nil
+)
+
+
+vuiDRCFormAdditionalFunctionsTable = '(
+     flattenCell  nil
+     joinableNets nil
+     changeLabel  nil
+     mustJoinNet  nil
+     outFile      nil
+     deleteCellText nil
+)
+
+;----------------------------------------------------------------------------
+; @(#)$CDS: assura version av4.1:Production:dfII6.1.7-64b:IC6.1.7-64b.500.4 07/10/17 21:23 (sjfnl321) $
+; sub-version 4.1_USR5_HF11
+;----------------------------------------------------------------------------
+
+
+;----------------------------------------------------------------------------
+; Assura 3.2 Template Version 1
+;----------------------------------------------------------------------------
+
+vuiDRCOptions = '(
+     (( ?avrpt ) 
+             ( "view" t )
+             ( "edit" t )
+             ( "use" t )
+             ( avrpt t )
+             ( spacer "  " )
+             ( spacer2 "  " )
+             ( printError nil )
+             ( useOption nil )
+             ( maxErrorShapesPerCell 1000 )
+     )
+     (( ?dbuPerUU ) 
+             ( "view" t )
+             ( "edit" t )
+             ( "use" t )
+             ( dbuPerUU 2000.0 )
+     )
+     (( ?flagNon45 ) 
+             ( "view" t )
+             ( "edit" t )
+             ( "use" t )
+             ( flag t )
+     )
+     (( ?flagOffGrid ) 
+             ( "view" t )
+             ( "edit" t )
+             ( "use" t )
+             ( label "Flag Off Grid" )
+             ( gridSize 0.005 )
+             ( markerSize 1.0 )
+     )
+     (( ?joinPins ) 
+             ( "view" t )
+             ( "edit" t )
+             ( "use" t )
+             ( joinPins "Top" )
+     )
+)
+

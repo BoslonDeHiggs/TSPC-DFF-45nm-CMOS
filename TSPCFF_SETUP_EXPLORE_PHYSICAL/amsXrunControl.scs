@@ -1,0 +1,31 @@
+// Control file for the IRUN
+
+simulator lang=spectre
+parameters supply_voltage=1.1
+
+amsd {
+    ie connrules=CR_dynsup_full_fast vddnet="testbench.bdut.vdd" vssnet="testbench.bdut.vss" tr=20p
+}
+
+// We use the spectre models for gpdk045 transistors
+include "../models/spectre/gpdk045.scs" section=tt
+
+// We choose the current Temperature condition
+simulatorOptions options temp=25
+
+// We choose a timing simulation
+//
+// Beware 1: The real time needed for the simulation is not known.
+// If the analog kernel stops before the end of the digital part
+// of the simulation, an increase of the "stop" parameter is needed
+//
+// Beware 2: "maxstep" parameter is the maximum allowed time step used
+// for the analog kernel. If the value is to small, you will increase
+// the simulation time. If the value is to high, you may have unacurate
+// results...
+//
+// Beware 3: method=trap : used to corrects pb link to trapezoidal ringing...
+tran tran stop=1000u  maxstep=50p save=all method=trap
+
+
+

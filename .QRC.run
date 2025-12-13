@@ -1,0 +1,6 @@
+#!/bin/sh -f
+#--------------------------------------------------------------------------------------
+# THE RUN FILE created by Cadence Extraction Quantus QRC UI Version 15.27-s638
+#--------------------------------------------------------------------------------------
+
+qrc  -log_file /cal/exterieurs/emancuso-24/Documents/3A/CD2IC/circuit_design_project/LVS/qrc.FinalRun.log -cmd /cal/exterieurs/emancuso-24/Documents/3A/CD2IC/circuit_design_project/LVS/qrc.FinalRun.ccl
