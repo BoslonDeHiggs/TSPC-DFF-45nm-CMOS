@@ -74,7 +74,7 @@ module testbench;
     // Write parameter infos on the first line of the resulting file
     $fwrite(outfile, "islope(ns)  capa(fF) ");
     for (delay_val_index = 0; delay_val_index <= 10; delay_val_index++)
-    $fwrite(outfile, "clk_delay(ps)  propagation(ns) ");
+    $fwrite(outfile, "setup(ps)  prop(ns) ");
     $fwrite(outfile, "\n");
 
     // At time 0 input is initialized to 0

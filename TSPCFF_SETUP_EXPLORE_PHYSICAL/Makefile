@@ -6,6 +6,8 @@ DUT_FILE=TSPCFF_PHY.vams
 # The original Spice file (xxx.scs). Empty for INV testing
 SP_FILE=../TSPCFF.sp
 
+### File used for plotting the results
+PLOT_FILE=plot_prop.py
 
 ### Modules names are forged from the Device Under Test name
 DUTDIR = $(shell basename $(CURDIR))
@@ -74,7 +76,7 @@ show_waves:
 	${TOOLSDIR}/viva -datadir psf &
 
 plot_results:
-	python3 plot.py ${DUTDIR}
+	python3 ${PLOT_FILE} ${DUTDIR}
 
 
 results:

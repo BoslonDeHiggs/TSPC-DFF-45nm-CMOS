@@ -6,6 +6,8 @@ DUT_FILE=TSPCFF.vams
 # The original Spice file (xxx.scs). Empty for INV testing
 SP_FILE=
 
+### File used for plotting the results
+PLOT_FILE=plot_prop+setup.py
 
 ### Modules names are forged from the Device Under Test name
 DUTDIR = $(shell basename $(CURDIR))
@@ -38,7 +40,7 @@ export CDLFILE=${TMPDIR}/${DUT}.cdl
 # The the board file
 BD_FILE=${BD}.vams
 # The testbench file
-TB_FILE=${TB}.sv
+TB_FILE=${TB}_setup.sv
 # The control file
 CTR_FILE=${CTR}.scs
 
@@ -73,7 +75,7 @@ show_waves:
 	${TOOLSDIR}/viva -datadir psf &
 
 plot_results:
-	python3 plot2.py ${DUTDIR}
+	python3 ${PLOT_FILE} ${DUTDIR}
 
 
 results:
